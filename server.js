@@ -121,6 +121,6 @@ app.post("/api/signOut",(req, res) => {
   res.send("make offline")
 })
 
-server.listen(4000, () => {
+server.listen(process.env.PORT || 4000, () => {
   console.log(`Server started on port ${4000} :)`);
 });

@@ -28,7 +28,9 @@ function createUser(name, password, email) {
       id,
       displayPicture,
       wallet,
-      todayPrice,
+      isOnline:true,
+      totalCP:0,
+      totalSP:0,
       buyStocks: [],
       sellStocks: [],
       repository: [],
@@ -39,8 +41,9 @@ function userLogin({ email, password }) {
   const getUser = db.get("users").find({ email, password }).value();
   if (getUser) {
     db.get("users")
-    .find({ email,password }).assign({  isOnline: true })
-    .write();
+      .find({ email, password })
+      .assign({ isOnline: true })
+      .write();
     const sendData = {};
     sendData.name = getUser.name;
     sendData.email = getUser.email;
@@ -51,6 +54,9 @@ function userLogin({ email, password }) {
     sendData.buyStocks = getUser.buyStocks;
     sendData.sellStocks = getUser.sellStocks;
     sendData.repository = getUser.repository;
+    sendData.totalCP = getUser.totalCP;
+    sendData.totalSP = getUser.totalSP;
+
     return sendData;
   }
   return "";
@@ -58,13 +64,23 @@ function userLogin({ email, password }) {
 function getAllStocksUsersdata() {
   const getAllUsers = db.get("users").value();
   const filterPasswordUsers = getAllUsers.map((user) => {
-    const { name, email, id, displayPicture, isOnline } = user;
+    const {
+      name,
+      email,
+      id,
+      displayPicture,
+      isOnline,
+      totalCP,
+      totalSP,
+    } = user;
     return {
       name,
       email,
       id,
       displayPicture,
       isOnline,
+      totalCP,
+      totalSP
     };
   });
 
@@ -101,7 +117,7 @@ function getAllStocksUsersdata() {
     stocks: filterAllStocks,
   };
 }
-function week52LowHigh(newPrice, weekHigh52, weekLow52,stockId) {
+function week52LowHigh(newPrice, weekHigh52, weekLow52, stockId) {
   if (newPrice > weekHigh52) {
     db.get("stocks")
       .find({ id: stockId })
@@ -128,12 +144,11 @@ function buyStock(email, password, stockId, buyQuantity) {
       const newPrice = financialRoundNumber(
         currentPrice * Math.pow(1.005, buyQuantity)
       );
-      
-      week52LowHigh(newPrice, weekHigh52, weekLow52,stockId);
+      week52LowHigh(newPrice, weekHigh52, weekLow52, stockId);
 
       const { wallet, buyStocks, repository } = checkLoginCredentials;
       const newWalletAmount = financialRoundNumber(
-        parseFloat(wallet) - parseFloat(buyQuantity) * currentPrice
+        parseFloat(wallet) - parseFloat(buyQuantity) * newPrice
       );
       if (newWalletAmount <= 0) {
         return {
@@ -148,12 +163,12 @@ function buyStock(email, password, stockId, buyQuantity) {
       const findIndexOfStock = repository.findIndex(
         (repo) => repo.stockSymbol === "FCB"
       );
-       
+
       if (totalStockQuantityAvailable.length === 0) {
         repository.push({
           stockSymbol: symbol,
           buyQuantity: parseInt(buyQuantity),
-          avgCostPrice: parseFloat(currentPrice).toFixed(2),
+          avgCostPrice: parseFloat(parseFloat(newPrice).toFixed(2)),
         });
       } else {
         const BuyQuantity = totalStockQuantityAvailable[0].buyQuantity;
@@ -161,8 +176,9 @@ function buyStock(email, password, stockId, buyQuantity) {
 
         const newAvgCostPrice =
           (parseFloat(avgCostPrice) * parseInt(BuyQuantity) +
-            parseFloat(currentPrice) * parseInt(buyQuantity)) /
+            parseFloat(newPrice) * parseInt(buyQuantity)) /
           (parseInt(BuyQuantity) + parseInt(buyQuantity));
+
         const newbuyQuantity = parseInt(BuyQuantity) + parseInt(buyQuantity);
         repository.splice(findIndexOfStock, 1, {
           stockSymbol,
@@ -175,7 +191,7 @@ function buyStock(email, password, stockId, buyQuantity) {
       buyStocks.push({
         stockSymbol: symbol,
         buyQuantity: parseFloat(buyQuantity),
-        costPrice: parseFloat(currentPrice),
+        costPrice: parseFloat(newPrice),
       });
 
       /////
@@ -207,17 +223,24 @@ function sellStock(email, password, stockId, sellQuantity) {
   if (checkLoginCredentials) {
     const findStock = db.get("stocks").find({ id: stockId }).value();
     const { totalQuantityAvailable, symbol } = findStock;
-    const newQuantity = parseInt(totalQuantityAvailable) + parseInt(sellQuantity);
-   
+    const newQuantity =
+      parseInt(totalQuantityAvailable) + parseInt(sellQuantity);
+
     if (newQuantity >= 0) {
       const { currentPrice, weekHigh52, weekLow52 } = findStock;
       const newPrice = financialRoundNumber(
-        currentPrice * Math.pow(0.995, sellQuantity)
+        currentPrice / Math.pow(1.005, sellQuantity)
       );
 
-      week52LowHigh(newPrice, weekHigh52, weekLow52,stockId);
+      week52LowHigh(newPrice, weekHigh52, weekLow52, stockId);
 
-      const { wallet, sellStocks, repository } = checkLoginCredentials;
+      const {
+        wallet,
+        sellStocks,
+        repository,
+        totalCP,
+        totalSP,
+      } = checkLoginCredentials;
 
       const totalStockQuantityAvailable = repository.filter(
         (repo) => repo.stockSymbol === symbol
@@ -230,43 +253,55 @@ function sellStock(email, password, stockId, sellQuantity) {
       const { stockSymbol, avgCostPrice } = totalStockQuantityAvailable[0];
       const newBuyQuantity = parseInt(buyQuantity) - parseInt(sellQuantity);
 
-      if(newBuyQuantity===0)
-      {
-        repository.splice(findIndexOfStock, 1)
-      }
-      else{
+      if (newBuyQuantity === 0) {
+        repository.splice(findIndexOfStock, 1);
+      } else {
         repository.splice(findIndexOfStock, 1, {
           stockSymbol,
           avgCostPrice: parseFloat(avgCostPrice),
           buyQuantity: parseInt(newBuyQuantity),
         });
       }
-      
 
       const newWalletAmount = financialRoundNumber(
         parseFloat(wallet) + parseFloat(sellQuantity) * parseFloat(currentPrice)
       );
-     
-     
 
+      const newtotalCP = (
+        parseFloat(totalCP) +
+        parseFloat(avgCostPrice) * parseInt(sellQuantity)
+      ).toFixed(2);
+
+      const newtotalSP = (
+        parseFloat(totalSP) +
+        parseFloat(currentPrice) * parseInt(sellQuantity)
+      ).toFixed(2);
       sellStocks.push({
         symbol: stockSymbol,
         quantity: parseInt(sellQuantity),
         avgCostPrice: parseFloat(avgCostPrice),
+        totalCP: parseFloat((parseFloat(avgCostPrice) * parseInt(sellQuantity)).toFixed(2)),
         avgSellingPrice: parseFloat(currentPrice),
+        totalSP: parseFloat((parseFloat(currentPrice) * parseInt(sellQuantity)).toFixed(2)),
       });
 
       db.get("stocks")
-      .find({ id: stockId })
-      .assign({
-        totalQuantityAvailable: parseFloat(newQuantity),
-        currentPrice: parseFloat(newPrice),
-      })
+        .find({ id: stockId })
+        .assign({
+          totalQuantityAvailable: parseFloat(newQuantity),
+          currentPrice: parseFloat(newPrice),
+        })
+        .write();
       db.get("users")
-      .find({ email, password })
-      .assign({ wallet: parseFloat(newWalletAmount), sellStocks,repository})
-      .write();
-
+        .find({ email, password })
+        .assign({
+          wallet: parseFloat(newWalletAmount),
+          sellStocks,
+          repository,
+          totalCP: parseFloat(newtotalCP),
+          totalSP: parseFloat(newtotalSP),
+        })
+        .write();
     } else {
       return {
         result: "Stock Quantity is not available",
@@ -276,10 +311,21 @@ function sellStock(email, password, stockId, sellQuantity) {
   return "";
 }
 
-function makeUserOffline(email,password){
-  db.get("users")
-  .find({ email,password }).assign({  isOnline: false })
-  .write();
+function makeUserOffline(email, password) {
+  db.get("users").find({ email, password }).assign({ isOnline: false }).write();
+}
+
+function getSellQuantity(email, password, symbol) {
+  const getUser = db.get("users").find({ email, password }).value();
+  if (getUser) {
+    const { repository } = getUser;
+    const findIndex = repository.findIndex((sym) => sym.stockSymbol === symbol);
+    if (findIndex === -1) {
+      return 0;
+    }
+    return repository[findIndex].buyQuantity;
+  }
+  return "";
 }
 module.exports = {
   fetchAllStocks,
@@ -288,5 +334,6 @@ module.exports = {
   getAllStocksUsersdata,
   buyStock,
   sellStock,
-  makeUserOffline
+  makeUserOffline,
+  getSellQuantity,
 };

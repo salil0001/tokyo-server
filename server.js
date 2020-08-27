@@ -88,6 +88,12 @@ app.post("/api/signIn", (req, res) => {
     if (email && password) {
       const getUser = userLogin({ email, password });
       if (getUser) {
+
+        wss.clients.forEach(function each(client) {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(getAllStocksUsersdata()));
+          }
+        });
         res.send(JSON.stringify(getUser));
       } else {
         res.send(JSON.stringify({ user: "invalid user" }));

@@ -69,6 +69,35 @@
         }
       ],
       "repository": []
+    },
+    {
+      "name": "sharma",
+      "password": "11qqaazz",
+      "email": "sharma@gmail.com",
+      "id": 0.5617264714287806,
+      "displayPicture": "https://img.icons8.com/plasticine/100/000000/person-male.png",
+      "wallet": 6500,
+      "isOnline": false,
+      "totalCP": 6306.8,
+      "totalSP": 6306.8,
+      "buyStocks": [
+        {
+          "stockSymbol": "M&M",
+          "buyQuantity": 10,
+          "costPrice": 630.68
+        }
+      ],
+      "sellStocks": [
+        {
+          "symbol": "M&M",
+          "quantity": 10,
+          "avgCostPrice": 630.68,
+          "totalCP": 6306.8,
+          "avgSellingPrice": 630.68,
+          "totalSP": 6306.8
+        }
+      ],
+      "repository": []
     }
   ],
   "stocks": [

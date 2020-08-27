@@ -7,6 +7,7 @@ var cors = require("cors");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.text());
+app.use(cors())
 const server = http.createServer(app);
 var locks = require("locks");
 var mutex = locks.createMutex();

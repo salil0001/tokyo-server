@@ -1,20 +1,6 @@
 {
   "users": [
     {
-      "name": "sasas",
-      "password": "assas",
-      "email": "asas@gmail.com",
-      "id": 0.6630791607385318,
-      "displayPicture": "https://img.icons8.com/plasticine/100/000000/person-male.png",
-      "wallet": 65000,
-      "isOnline": false,
-      "totalCP": 0,
-      "totalSP": 0,
-      "buyStocks": [],
-      "sellStocks": [],
-      "repository": []
-    },
-    {
       "name": "Salil Sharma",
       "password": "11qqaazz",
       "email": "salilsharma@gmail.com",

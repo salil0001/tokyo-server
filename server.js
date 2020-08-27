@@ -48,20 +48,10 @@ app.get("/", (req, res) => {
   });
 });
 
-app.post("/user", (req, res) => {
-  const user = req.body;
-  mutex.lock(function () {
-    addUser(user);
-    res.send("Done");
-
-    mutex.unlock();
-  });
-});
 
 app.get("/allStocks", cors(), (req, res) => {
   mutex.lock(function () {
     res.send(fetchAllStocks());
-
     mutex.unlock();
   });
 });

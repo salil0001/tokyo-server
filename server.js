@@ -7,7 +7,7 @@ var cors = require("cors");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.text());
-app.use(cors())
+app.use(cors());
 const server = http.createServer(app);
 var locks = require("locks");
 var mutex = locks.createMutex();
@@ -21,6 +21,7 @@ const {
   sellStock,
   makeUserOffline,
   getSellQuantity,
+  resetDatabase,
 } = require("./db");
 
 const wss = new WebSocket.Server({
@@ -48,7 +49,6 @@ app.get("/", (req, res) => {
     mutex.unlock();
   });
 });
-
 
 app.get("/allStocks", cors(), (req, res) => {
   mutex.lock(function () {
@@ -79,7 +79,6 @@ app.post("/api/signIn", (req, res) => {
     if (email && password) {
       const getUser = userLogin({ email, password });
       if (getUser) {
-
         wss.clients.forEach(function each(client) {
           if (client.readyState === WebSocket.OPEN) {
             client.send(JSON.stringify(getAllStocksUsersdata()));
@@ -185,26 +184,33 @@ app.post("/api/makeOffine", (req, res) => {
 app.post("/api/signOut", (req, res) => {
   const { password, email } = req.body;
   mutex.lock(function () {
-
     makeUserOffline(email, password);
-      wss.clients.forEach(function each(client) {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(getAllStocksUsersdata()));
-    }
-   });
-  res.send("make offline");
+    wss.clients.forEach(function each(client) {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify(getAllStocksUsersdata()));
+      }
+    });
+    res.send("make offline");
 
-  mutex.unlock();
-})
+    mutex.unlock();
+  });
 });
 app.post("/api/getSellQuantity", (req, res) => {
   const { email, password, symbol } = req.body;
   mutex.lock(function () {
-  const quantity = getSellQuantity(email, password, symbol);
-  res.send(JSON.stringify(quantity));
+    const quantity = getSellQuantity(email, password, symbol);
+    res.send(JSON.stringify(quantity));
 
-  mutex.unlock()
-})
+    mutex.unlock();
+  });
+});
+app.get("/api/resetAll", (req, res) => {
+  mutex.lock(function () {
+    resetDatabase();
+    res.send("Data set");
+
+    mutex.unlock();
+  });
 });
 
 server.listen(process.env.PORT || 4000, () => {

@@ -28,9 +28,9 @@ function createUser(name, password, email) {
       id,
       displayPicture,
       wallet,
-      isOnline:true,
-      totalCP:0,
-      totalSP:0,
+      isOnline: true,
+      totalCP: 0,
+      totalSP: 0,
       buyStocks: [],
       sellStocks: [],
       repository: [],
@@ -80,7 +80,7 @@ function getAllStocksUsersdata() {
       displayPicture,
       isOnline,
       totalCP,
-      totalSP
+      totalSP,
     };
   });
 
@@ -280,9 +280,13 @@ function sellStock(email, password, stockId, sellQuantity) {
         symbol: stockSymbol,
         quantity: parseInt(sellQuantity),
         avgCostPrice: parseFloat(avgCostPrice),
-        totalCP: parseFloat((parseFloat(avgCostPrice) * parseInt(sellQuantity)).toFixed(2)),
+        totalCP: parseFloat(
+          (parseFloat(avgCostPrice) * parseInt(sellQuantity)).toFixed(2)
+        ),
         avgSellingPrice: parseFloat(currentPrice),
-        totalSP: parseFloat((parseFloat(currentPrice) * parseInt(sellQuantity)).toFixed(2)),
+        totalSP: parseFloat(
+          (parseFloat(currentPrice) * parseInt(sellQuantity)).toFixed(2)
+        ),
       });
 
       db.get("stocks")
@@ -327,6 +331,82 @@ function getSellQuantity(email, password, symbol) {
   }
   return "";
 }
+
+function resetDatabase() {
+  db.set({
+    users: [],
+  }).write();
+  db.set({
+    stocks: [
+      {
+        id: 1,
+        name: "Facebook",
+        totalQuantityAvailable: 501096,
+        currentPrice: 200,
+        todayPrice: 200,
+        weekHigh52: 212.34,
+        weekLow52: 200,
+        yearIPO: 1996,
+        imageCDN: "https://img.icons8.com/fluent/48/000000/facebook-new.png",
+        currency: "USD",
+        symbol: "FCB",
+      },
+      {
+        id: 2,
+        name: "Nissan",
+        totalQuantityAvailable: 1000000,
+        currentPrice: 2100,
+        todayPrice: 2000,
+        weekHigh52: 2300,
+        weekLow52: 220,
+        yearIPO: 1990,
+        imageCDN: "https://img.icons8.com/color/48/000000/nissan.png",
+        currency: "USD",
+        symbol: "NSN",
+      },
+      {
+        id: 3,
+        name: "Tesla",
+        totalQuantityAvailable: 1000000,
+        currentPrice: 450,
+        todayPrice: 500,
+        weekHigh52: 700,
+        weekLow52: 210,
+        yearIPO: 2009,
+        imageCDN: "https://img.icons8.com/color/48/000000/tesla-logo.png",
+        currency: "USD",
+        symbol: "TSN",
+      },
+      {
+        id: 4,
+        name: "Reliance",
+        totalQuantityAvailable: 1000000,
+        currentPrice: 2000,
+        todayPrice: 1800,
+        weekHigh52: 2300,
+        weekLow52: 800,
+        yearIPO: 2000,
+        imageCDN:
+          "https://img.icons8.com/ios/50/000000/reliance-digital-tv.png",
+        currency: "USD",
+        symbol: "RIL",
+      },
+      {
+        id: 5,
+        name: "Mahindra & Mahindra",
+        totalQuantityAvailable: 1000000,
+        currentPrice: 600,
+        todayPrice: 650,
+        weekHigh52: 900,
+        weekLow52: 275,
+        yearIPO: 2010,
+        imageCDN: "https://img.icons8.com/nolan/48/maxcdn.png",
+        currency: "USD",
+        symbol: "M&M",
+      },
+    ],
+  }).write();
+}
 module.exports = {
   fetchAllStocks,
   createUser,
@@ -336,4 +416,5 @@ module.exports = {
   sellStock,
   makeUserOffline,
   getSellQuantity,
+  resetDatabase,
 };

@@ -1,97 +1,11 @@
 {
-  "users": [
-    {
-      "name": "Salil Sharma",
-      "password": "11qqaazz",
-      "email": "salilsharma@gmail.com",
-      "id": 0.1200463641371794,
-      "displayPicture": "https://img.icons8.com/plasticine/100/000000/person-male.png",
-      "wallet": 2500,
-      "isOnline": false,
-      "totalCP": 4375.6,
-      "totalSP": 4375.6,
-      "buyStocks": [],
-      "sellStocks": [],
-      "repository": []
-    },
-    {
-      "name": "sameer",
-      "password": "11qqaazz",
-      "email": "sameer@gmail.com",
-      "id": 0.278932868774322,
-      "displayPicture": "https://img.icons8.com/plasticine/100/000000/person-male.png",
-      "wallet": 6500,
-      "isOnline": false,
-      "totalCP": 4658.58,
-      "totalSP": 4658.58,
-      "buyStocks": [
-        {
-          "stockSymbol": "FCB",
-          "buyQuantity": 12,
-          "costPrice": 212.34
-        },
-        {
-          "stockSymbol": "NSN",
-          "buyQuantity": 1,
-          "costPrice": 2110.5
-        }
-      ],
-      "sellStocks": [
-        {
-          "symbol": "FCB",
-          "quantity": 12,
-          "avgCostPrice": 212.34,
-          "totalCP": 2548.08,
-          "avgSellingPrice": 212.34,
-          "totalSP": 2548.08
-        },
-        {
-          "symbol": "NSN",
-          "quantity": 1,
-          "avgCostPrice": 2110.5,
-          "totalCP": 2110.5,
-          "avgSellingPrice": 2110.5,
-          "totalSP": 2110.5
-        }
-      ],
-      "repository": []
-    },
-    {
-      "name": "sharma",
-      "password": "11qqaazz",
-      "email": "sharma@gmail.com",
-      "id": 0.5617264714287806,
-      "displayPicture": "https://img.icons8.com/plasticine/100/000000/person-male.png",
-      "wallet": 6500,
-      "isOnline": false,
-      "totalCP": 6306.8,
-      "totalSP": 6306.8,
-      "buyStocks": [
-        {
-          "stockSymbol": "M&M",
-          "buyQuantity": 10,
-          "costPrice": 630.68
-        }
-      ],
-      "sellStocks": [
-        {
-          "symbol": "M&M",
-          "quantity": 10,
-          "avgCostPrice": 630.68,
-          "totalCP": 6306.8,
-          "avgSellingPrice": 630.68,
-          "totalSP": 6306.8
-        }
-      ],
-      "repository": []
-    }
-  ],
+  "users": [],
   "stocks": [
     {
       "id": 1,
       "name": "Facebook",
       "totalQuantityAvailable": 501096,
-      "currentPrice": 200,
+      "currentPrice": 220,
       "todayPrice": 200,
       "weekHigh52": 212.34,
       "weekLow52": 200,

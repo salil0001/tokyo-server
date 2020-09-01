@@ -4,10 +4,10 @@
     {
       "id": 1,
       "name": "Facebook",
-      "totalQuantityAvailable": 501096,
-      "currentPrice": 220,
+      "totalQuantityAvailable": 501094,
+      "currentPrice": 222.21,
       "todayPrice": 200,
-      "weekHigh52": 212.34,
+      "weekHigh52": 233.57,
       "weekLow52": 200,
       "yearIPO": 1996,
       "imageCDN": "https://img.icons8.com/fluent/48/000000/facebook-new.png",

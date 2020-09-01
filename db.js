@@ -17,9 +17,9 @@ function financialRoundNumber(x) {
 
 function createUser(name, password, email) {
   const id = Math.random();
+  const wallet = 6500;
   const displayPicture =
     "https://img.icons8.com/plasticine/100/000000/person-male.png";
-  const wallet = 6500;
   db.get("users")
     .push({
       name,
@@ -37,27 +37,41 @@ function createUser(name, password, email) {
     })
     .write();
 }
-function userLogin({ email, password }) {
-  const getUser = db.get("users").find({ email, password }).value();
+function userLogin(getEmail, password ) {
+  const getUser = db.get("users").find({ email:getEmail, password }).value();
   if (getUser) {
     db.get("users")
-      .find({ email, password })
+      .find({ email:getEmail, password })
       .assign({ isOnline: true })
       .write();
-    const sendData = {};
-    sendData.name = getUser.name;
-    sendData.email = getUser.email;
-    sendData.id = getUser.id;
-    sendData.displayPicture = getUser.displayPicture;
-    sendData.wallet = getUser.wallet;
-    sendData.isOnline = getUser.isOnline;
-    sendData.buyStocks = getUser.buyStocks;
-    sendData.sellStocks = getUser.sellStocks;
-    sendData.repository = getUser.repository;
-    sendData.totalCP = getUser.totalCP;
-    sendData.totalSP = getUser.totalSP;
 
-    return sendData;
+    const {
+      name,
+      id,
+      displayPicture,
+      wallet,
+      isOnline,
+      buyStocks,
+      sellStocks,
+      repository,
+      totalCP,
+      totalSP,
+      email
+    } = getUser;
+
+    return {
+      name,
+      id,
+      displayPicture,
+      wallet,
+      isOnline,
+      buyStocks,
+      sellStocks,
+      totalCP,
+      totalSP,
+      email,
+      repository
+    };
   }
   return "";
 }
@@ -132,10 +146,11 @@ function week52LowHigh(newPrice, weekHigh52, weekLow52, stockId) {
 }
 
 function buyStock(email, password, stockId, buyQuantity) {
-  const checkLoginCredentials = userLogin({ email, password });
+
+  const checkLoginCredentials = userLogin( email, password );
   if (checkLoginCredentials) {
     const findStock = db.get("stocks").find({ id: stockId }).value();
-    const { totalQuantityAvailable, symbol, weekHigh52, weekLow52 } = findStock;
+    const { totalQuantityAvailable, symbol, weekHigh52, weekLow52,name } = findStock;
 
     const newQuantity =
       parseInt(totalQuantityAvailable) - parseInt(buyQuantity);
@@ -161,7 +176,7 @@ function buyStock(email, password, stockId, buyQuantity) {
         (repo) => repo.stockSymbol === symbol
       );
       const findIndexOfStock = repository.findIndex(
-        (repo) => repo.stockSymbol === "FCB"
+        (repo) => repo.stockSymbol === symbol
       );
 
       if (totalStockQuantityAvailable.length === 0) {
@@ -169,6 +184,8 @@ function buyStock(email, password, stockId, buyQuantity) {
           stockSymbol: symbol,
           buyQuantity: parseInt(buyQuantity),
           avgCostPrice: parseFloat(parseFloat(newPrice).toFixed(2)),
+          stockName:name,
+          id:Math.random()
         });
       } else {
         const BuyQuantity = totalStockQuantityAvailable[0].buyQuantity;
@@ -184,6 +201,8 @@ function buyStock(email, password, stockId, buyQuantity) {
           stockSymbol,
           avgCostPrice: parseFloat(newAvgCostPrice).toFixed(2),
           buyQuantity: parseInt(newbuyQuantity),
+          stockName:name,
+          id:Math.random()
         });
       }
 
@@ -192,6 +211,8 @@ function buyStock(email, password, stockId, buyQuantity) {
         stockSymbol: symbol,
         buyQuantity: parseFloat(buyQuantity),
         costPrice: parseFloat(newPrice),
+        stockName:name,
+        id:Math.random()
       });
 
       /////
@@ -219,15 +240,17 @@ function buyStock(email, password, stockId, buyQuantity) {
 }
 
 function sellStock(email, password, stockId, sellQuantity) {
-  const checkLoginCredentials = userLogin({ email, password });
+  const checkLoginCredentials = userLogin( email, password );
   if (checkLoginCredentials) {
+   
     const findStock = db.get("stocks").find({ id: stockId }).value();
-    const { totalQuantityAvailable, symbol } = findStock;
+
+    const { totalQuantityAvailable, symbol,name } = findStock;
     const newQuantity =
       parseInt(totalQuantityAvailable) + parseInt(sellQuantity);
 
     if (newQuantity >= 0) {
-      const { currentPrice, weekHigh52, weekLow52 } = findStock;
+      const { currentPrice, weekHigh52, weekLow52,name } = findStock;
       const newPrice = financialRoundNumber(
         currentPrice / Math.pow(1.005, sellQuantity)
       );
@@ -246,11 +269,11 @@ function sellStock(email, password, stockId, sellQuantity) {
         (repo) => repo.stockSymbol === symbol
       );
       const findIndexOfStock = repository.findIndex(
-        (repo) => repo.stockSymbol === "FCB"
+        (repo) => repo.stockSymbol === symbol
       );
 
       const { buyQuantity } = totalStockQuantityAvailable[0];
-      const { stockSymbol, avgCostPrice } = totalStockQuantityAvailable[0];
+      const { stockSymbol, avgCostPrice,stockName } = totalStockQuantityAvailable[0];
       const newBuyQuantity = parseInt(buyQuantity) - parseInt(sellQuantity);
 
       if (newBuyQuantity === 0) {
@@ -258,8 +281,10 @@ function sellStock(email, password, stockId, sellQuantity) {
       } else {
         repository.splice(findIndexOfStock, 1, {
           stockSymbol,
+          stockName,
           avgCostPrice: parseFloat(avgCostPrice),
           buyQuantity: parseInt(newBuyQuantity),
+          id:Math.random()
         });
       }
 
@@ -277,7 +302,9 @@ function sellStock(email, password, stockId, sellQuantity) {
         parseFloat(currentPrice) * parseInt(sellQuantity)
       ).toFixed(2);
       sellStocks.push({
-        symbol: stockSymbol,
+        id:Math.random(),
+        stockSymbol,
+        stockName,
         quantity: parseInt(sellQuantity),
         avgCostPrice: parseFloat(avgCostPrice),
         totalCP: parseFloat(
@@ -321,8 +348,10 @@ function makeUserOffline(email, password) {
 
 function getSellQuantity(email, password, symbol) {
   const getUser = db.get("users").find({ email, password }).value();
+
   if (getUser) {
     const { repository } = getUser;
+   
     const findIndex = repository.findIndex((sym) => sym.stockSymbol === symbol);
     if (findIndex === -1) {
       return 0;

@@ -370,7 +370,7 @@ function resetDatabase() {
       {
         id: 1,
         name: "Facebook",
-        totalQuantityAvailable: 501096,
+        totalQuantityAvailable: 100000,
         currentPrice: 200,
         todayPrice: 200,
         weekHigh52: 212.34,

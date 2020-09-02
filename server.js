@@ -48,12 +48,15 @@ app.post("/post/createUser", (req, res) => {
   const { name, password, email } = req.body;
   if (name && password && email) {
     createUser(name, password, email);
-    res.send(JSON.stringify({ user: "Successfully done." }));
+
     wss.clients.forEach(function each(client) {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(getAllStocksUsersdata()));
       }
     });
+
+    res.send(JSON.stringify({ user: "Successfully done." }));
+    
   }
 });
 app.post("/api/signIn", (req, res) => {
@@ -62,12 +65,14 @@ app.post("/api/signIn", (req, res) => {
   if (email && password) {
     const getUser = userLogin( email, password );
     if (getUser) {
-      res.send(JSON.stringify(getUser));
+     
       wss.clients.forEach(function each(client) {
         if (client.readyState === WebSocket.OPEN) {
           client.send(JSON.stringify(getAllStocksUsersdata()));
         }
       });
+
+      res.send(JSON.stringify(getUser));
     } else {
       res.send(JSON.stringify({ user: "invalid user" }));
     }
@@ -89,6 +94,15 @@ app.post("/api/buyStock", (req, res) => {
     totalSP,
   } = getUserWalletAndHistory;
 
+
+
+  wss.clients.forEach(function each(client) {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(getAllStocksUsersdata()));
+    }
+  });
+
+
   res.send(
     JSON.stringify({
       wallet,
@@ -101,11 +115,7 @@ app.post("/api/buyStock", (req, res) => {
   );
 
 
-  wss.clients.forEach(function each(client) {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(getAllStocksUsersdata()));
-    }
-  });
+ 
   
 });
 app.post("/api/sellStock", (req, res) => {
@@ -125,6 +135,12 @@ app.post("/api/sellStock", (req, res) => {
     totalSP,
   } = getUserWalletAndHistory;
 
+
+  wss.clients.forEach(function each(client) {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(getAllStocksUsersdata()));
+    }
+  });
   res.send(
     JSON.stringify({
       wallet,
@@ -135,37 +151,34 @@ app.post("/api/sellStock", (req, res) => {
       totalSP,
     })
   );
-  wss.clients.forEach(function each(client) {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(getAllStocksUsersdata()));
-    }
-  });
+  
 });
 
 app.post("/api/makeOffine", (req, res) => {
   const receievedData = JSON.parse(req.body);
   const { email, password } = receievedData;
   makeUserOffline(email, password);
-  res.send("make Offline");
+ 
   wss.clients.forEach(function each(client) {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(getAllStocksUsersdata()));
     }
   });
-  
+  res.send("make Offline");
 });
 
 app.post("/api/signOut", (req, res) => {
   const { password, email } = req.body;
 
   makeUserOffline(email, password);
-  res.send("make offline");
+  
   wss.clients.forEach(function each(client) {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(getAllStocksUsersdata()));
     }
   });
   
+  res.send("make offline");
 });
 app.post("/api/getSellQuantity", (req, res) => {
   const { email, password, symbol } = req.body;

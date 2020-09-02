@@ -48,12 +48,12 @@ app.post("/post/createUser", (req, res) => {
   const { name, password, email } = req.body;
   if (name && password && email) {
     createUser(name, password, email);
+    res.send(JSON.stringify({ user: "Successfully done." }));
     wss.clients.forEach(function each(client) {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(getAllStocksUsersdata()));
       }
     });
-    res.send(JSON.stringify({ user: "Successfully done." }));
   }
 });
 app.post("/api/signIn", (req, res) => {
@@ -62,12 +62,12 @@ app.post("/api/signIn", (req, res) => {
   if (email && password) {
     const getUser = userLogin( email, password );
     if (getUser) {
+      res.send(JSON.stringify(getUser));
       wss.clients.forEach(function each(client) {
         if (client.readyState === WebSocket.OPEN) {
           client.send(JSON.stringify(getAllStocksUsersdata()));
         }
       });
-      res.send(JSON.stringify(getUser));
     } else {
       res.send(JSON.stringify({ user: "invalid user" }));
     }
@@ -78,12 +78,7 @@ app.post("/api/buyStock", (req, res) => {
   const { email, password, stockId, buyQuantity } = req.body;
 
   buyStock(email, password, stockId, buyQuantity);
-  wss.clients.forEach(function each(client) {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(getAllStocksUsersdata()));
-    }
-  });
-
+  
   const getUserWalletAndHistory = userLogin( email, password );
   const {
     wallet,
@@ -94,7 +89,6 @@ app.post("/api/buyStock", (req, res) => {
     totalSP,
   } = getUserWalletAndHistory;
 
-
   res.send(
     JSON.stringify({
       wallet,
@@ -105,20 +99,23 @@ app.post("/api/buyStock", (req, res) => {
       totalSP,
     })
   );
-});
-app.post("/api/sellStock", (req, res) => {
-  const { email, password, stockId, sellQuantity } = req.body;
 
-  sellStock(email, password, stockId, sellQuantity);
 
   wss.clients.forEach(function each(client) {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(getAllStocksUsersdata()));
     }
   });
+  
+});
+app.post("/api/sellStock", (req, res) => {
+  const { email, password, stockId, sellQuantity } = req.body;
+
+  sellStock(email, password, stockId, sellQuantity);
 
   const getUserWalletAndHistory = userLogin(email, password );
 
+  
   const {
     wallet,
     buyStocks,
@@ -127,6 +124,7 @@ app.post("/api/sellStock", (req, res) => {
     totalCP,
     totalSP,
   } = getUserWalletAndHistory;
+
   res.send(
     JSON.stringify({
       wallet,
@@ -137,31 +135,37 @@ app.post("/api/sellStock", (req, res) => {
       totalSP,
     })
   );
-});
-
-app.post("/api/makeOffine", (req, res) => {
-  const receievedData = JSON.parse(req.body);
-  const { email, password } = receievedData;
-
-  makeUserOffline(email, password);
   wss.clients.forEach(function each(client) {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(getAllStocksUsersdata()));
     }
   });
+});
+
+app.post("/api/makeOffine", (req, res) => {
+  const receievedData = JSON.parse(req.body);
+  const { email, password } = receievedData;
+  makeUserOffline(email, password);
   res.send("make Offline");
+  wss.clients.forEach(function each(client) {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(getAllStocksUsersdata()));
+    }
+  });
+  
 });
 
 app.post("/api/signOut", (req, res) => {
   const { password, email } = req.body;
 
   makeUserOffline(email, password);
+  res.send("make offline");
   wss.clients.forEach(function each(client) {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(getAllStocksUsersdata()));
     }
   });
-  res.send("make offline");
+  
 });
 app.post("/api/getSellQuantity", (req, res) => {
   const { email, password, symbol } = req.body;

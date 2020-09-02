@@ -1,13 +1,142 @@
 {
-  "users": [],
+  "users": [
+    {
+      "name": "samuel",
+      "password": "11qqaazz",
+      "email": "samuel@gmail.com",
+      "id": 0.2187867123839895,
+      "displayPicture": "https://img.icons8.com/plasticine/100/000000/person-male.png",
+      "wallet": 6836.95,
+      "isOnline": true,
+      "totalCP": 8247.26,
+      "totalSP": 8584.21,
+      "buyStocks": [
+        {
+          "stockSymbol": "FCB",
+          "buyQuantity": 1,
+          "costPrice": 223.32,
+          "stockName": "Facebook",
+          "id": 0.8885154107132984
+        },
+        {
+          "stockSymbol": "FCB",
+          "buyQuantity": 12,
+          "costPrice": 237.09,
+          "stockName": "Facebook",
+          "id": 0.5155610161902378
+        },
+        {
+          "stockSymbol": "FCB",
+          "buyQuantity": 10,
+          "costPrice": 261.95,
+          "stockName": "Facebook",
+          "id": 0.058957083648411235
+        },
+        {
+          "stockSymbol": "FCB",
+          "buyQuantity": 2,
+          "costPrice": 224.43,
+          "stockName": "Facebook",
+          "id": 0.38908889543868885
+        },
+        {
+          "stockSymbol": "NSN",
+          "buyQuantity": 1,
+          "costPrice": 2110.5,
+          "stockName": "Nissan",
+          "id": 0.5831516440493265
+        }
+      ],
+      "sellStocks": [
+        {
+          "id": 0.2963060657084744,
+          "stockSymbol": "FCB",
+          "stockName": "Facebook",
+          "quantity": 23,
+          "avgCostPrice": 247.3,
+          "totalCP": 5687.9,
+          "avgSellingPrice": 261.95,
+          "totalSP": 6024.85
+        },
+        {
+          "id": 0.01521651484853992,
+          "stockSymbol": "FCB",
+          "stockName": "Facebook",
+          "quantity": 2,
+          "avgCostPrice": 224.43,
+          "totalCP": 448.86,
+          "avgSellingPrice": 224.43,
+          "totalSP": 448.86
+        },
+        {
+          "id": 0.5918444541750456,
+          "stockSymbol": "NSN",
+          "stockName": "Nissan",
+          "quantity": 1,
+          "avgCostPrice": 2110.5,
+          "totalCP": 2110.5,
+          "avgSellingPrice": 2110.5,
+          "totalSP": 2110.5
+        }
+      ],
+      "repository": []
+    },
+    {
+      "name": "Samuel",
+      "password": "11qqaazz",
+      "email": "samuel@gmail.com",
+      "id": 0.3358955561343073,
+      "displayPicture": "https://img.icons8.com/plasticine/100/000000/person-male.png",
+      "wallet": 6500,
+      "isOnline": true,
+      "totalCP": 0,
+      "totalSP": 0,
+      "buyStocks": [],
+      "sellStocks": [],
+      "repository": []
+    },
+    {
+      "name": "sammera",
+      "password": "11qqaazz",
+      "email": "sameera@gmail.com",
+      "id": 0.2615055145131533,
+      "displayPicture": "https://img.icons8.com/plasticine/100/000000/person-male.png",
+      "wallet": 6343.5,
+      "isOnline": false,
+      "totalCP": 2492.1,
+      "totalSP": 2335.6,
+      "buyStocks": [
+        {
+          "stockSymbol": "FCB",
+          "buyQuantity": 10,
+          "costPrice": 249.21,
+          "stockName": "Facebook",
+          "id": 0.9692815733550999
+        }
+      ],
+      "sellStocks": [
+        {
+          "id": 0.3580104258940733,
+          "stockSymbol": "FCB",
+          "stockName": "Facebook",
+          "quantity": 10,
+          "avgCostPrice": 249.21,
+          "totalCP": 2492.1,
+          "avgSellingPrice": 233.56,
+          "totalSP": 2335.6
+        }
+      ],
+      "repository": []
+    }
+  ],
   "stocks": [
     {
       "id": 1,
       "name": "Facebook",
-      "totalQuantityAvailable": 501094,
-      "currentPrice": 222.21,
+      "totalQuantityAvailable": 1000000,
+      "currentPrice": 222.2,
       "todayPrice": 200,
-      "weekHigh52": 233.57,
+      "weekHigh52": 261.95,
       "weekLow52": 200,
       "yearIPO": 1996,
       "imageCDN": "https://img.icons8.com/fluent/48/000000/facebook-new.png",
